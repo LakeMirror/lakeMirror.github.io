@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="做个不甘于平凡的人，首先要做个平凡的人">
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        Android 插件化浅析 - undefined
+        
+    </title>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/aircloud.css">
+    <link rel="stylesheet" href="/css/gitment.css">
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_pl6z7sid89qkt9.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> learn by heart， live by heart </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar">
+            <img src="/img/avatar.jpg">
+        </div>
+        <div class="name">
+            <i>秦家十月</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li>
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li>
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+            <li>
+                <a id="search">
+                    <i class="iconfont icon-sousuo1"></i>
+                    <span>搜索</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">Android 插件化浅析</span></a></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input">
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+        <div class="index-about-mobile">
+            <i> learn by heart， live by heart </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        Android 插件化浅析
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2019-05-13 15:06:04</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#Android" title="Android">Android</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#插件化" title="插件化">插件化</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+
+    </div>
+    <div class="post-content ">
+        <h2>Android 插件化浅析</h2>
+
+<p><b>前言： 组件化和插件化</b></p>
+<blockquote>
+<p>组件化</p>
+</blockquote>
+<p>组件化就是将 App 拆分成几个低耦合的组件，每个组件负责不同的功能， 独立进行编译。 其好处是使并行开发变得简单(版本管理，互相不耦合等)， 且组件独立编译， 可以提高编译的效率。</p>
+<blockquote>
+<p>插件化</p>
+</blockquote>
+<p>如果说组件化就是划分为不同的 Module 的话， 插件化就是划分成不同的 apk， 使用插件时， 将 apk 中的打包的 dex 文件添加到主程序的的 Dex 文件集合中，这样就可以调用其中的类与方法。</p>
+<p>组件化与插件化的相同点在于都是将一个完整庞杂的 App， 根据不同的要求划分成了一些不同的部分，提升了开发的效率，并且提高了代码的可维护性。</p>
+<p>不同点在于，组件化的使用是静态加载的，你能使用什么组件，在你最初打包 apk 的时候就已经定下来了，但是插件化不同，你可以在你需要使用的时候，下载对应的插件，然后动态的加载到应用中使用。</p>
+<p><b> 基本原理 </b></p>
+<blockquote>
+<p>类的加载</p>
+</blockquote>
+<p>Android中常用的有两种类加载器，DexClassLoader 和 PathClassLoader，它们都继承于BaseDexClassLoader</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">// DexClassLoader</span><br><span class="line">public class DexClassLoader extends BaseDexClassLoader &#123;    </span><br><span class="line">	public DexClassLoader(String dexPath, String optimizedDirectory,</span><br><span class="line">            String libraryPath, ClassLoader parent) &#123;        </span><br><span class="line">		super(dexPath, new File(optimizedDirectory), libraryPath, parent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// PathClassLoader</span><br><span class="line">public class PathClassLoader extends BaseDexClassLoader &#123;    </span><br><span class="line"></span><br><span class="line">	public PathClassLoader(String dexPath, ClassLoader parent) &#123;     </span><br><span class="line">   		super(dexPath, null, null, parent);</span><br><span class="line">    &#125; </span><br><span class="line">    </span><br><span class="line"> 	public PathClassLoader(String dexPath, String libraryPath,</span><br><span class="line">            ClassLoader parent) &#123;    </span><br><span class="line">    	super(dexPath, null, libraryPath, parent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>区别在于调用父类构造器时，DexClassLoader多传了一个optimizedDirectory参数，这个目录必须是内部存储路径，用来缓存系统创建的Dex文件。而PathClassLoader该参数为null，只能加载内部存储目录的Dex文件。</p>
+<p>所以我们可以用DexClassLoader去加载外部的apk，用法如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">new DexClassLoader(apk.getAbsolutePath(), dexOutputPath, libsDir.getAbsolutePath(), parent)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>资源加载</p>
+</blockquote>
+<p>Android系统通过Resource对象加载资源，下面代码展示了该对象的生成过程</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">//创建AssetManager对象 </span><br><span class="line">AssetManager assets = new AssetManager();</span><br><span class="line"> //将apk路径添加到AssetManager中</span><br><span class="line">  if (assets.addAssetPath(resDir) == 0)&#123;              </span><br><span class="line">    return null;  </span><br><span class="line">&#125;</span><br><span class="line"> //创建Resource对象</span><br><span class="line"></span><br><span class="line">r = new Resources(assets, metrics, getConfiguration(), compInfo);</span><br></pre></td></tr></table></figure>
+<p>如果要使用 apk 插件中的资源， 则需要将 apk 的路径加入到 AssetManager 中， 最后将 assetManager 生成的 Resource 类通过反射设置到上下文的 mResource 字段中即可。</p>
+<blockquote>
+<p>四大组件之 Activity 的加载</p>
+</blockquote>
+<p>插件化中 Activity 的使用可以通过两种方式来实现， 一种是 Proxy 代理类， 还有一种是 hook， 而后一种是现在实现的主要方式。 而 Hook 方式的实现目前主要是采用占坑实现，及事先在 Manifest 中注册一个用来占坑的 Activity, 再启动插件 Activity 的时候，首先将之替换为占坑的 Activity 以通过 AMS 的检测， 然后在 ActivityThread 真正启动 Activity 之前将插件的 Activity 替换回来。</p>
+<p>要理解 hook 的实现， 首先要了解一下 Activity 的启动流程， 附上一篇文章供参考: <a href="https://www.jianshu.com/p/a626387cd523" target="_blank" rel="noopener">Activity启动</a></p>
+<p>大致了解之后， 发现 IActivityManager 是一个很好的 hook 点, 我们只需要拦截它的 startActivity 方法，将要启动的 Activity 替换为占坑 Activity, 这样可以顺利的通过 AMS 的检测。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">public class IActivityManagerProxy implements InvocationHandler &#123;</span><br><span class="line">    private Object mActivityManager;</span><br><span class="line">    private static final String TAG = &quot;IActivityManagerProxy&quot;;</span><br><span class="line"></span><br><span class="line">    public IActivityManagerProxy(Object activityManager) &#123;</span><br><span class="line">        this.mActivityManager = activityManager;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Object invoke(Object o, Method method, Object[] args) throws Throwable &#123;</span><br><span class="line">        //1</span><br><span class="line">        if (&quot;startActivity&quot;.equals(method.getName())) &#123;</span><br><span class="line">            Intent intent = null;</span><br><span class="line">            int index = 0;</span><br><span class="line">            for (int i = 0; i &lt; args.length; i++) &#123;</span><br><span class="line">                if (args[i] instanceof Intent) &#123;</span><br><span class="line">                    index = i;</span><br><span class="line">                    break;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            intent = (Intent) args[index];</span><br><span class="line">            //2</span><br><span class="line">            Intent subIntent = new Intent();</span><br><span class="line">            String packageName = &quot;主程序包名&quot;;</span><br><span class="line">            //3 替换为占坑的 Activity</span><br><span class="line">            subIntent.setClassName(packageName, packageName + &quot;.StubActivity&quot;);</span><br><span class="line">            // 4 保存真正要跳转的 Intent 恢复时使用</span><br><span class="line">            subIntent.putExtra(HookHelper.TARGET_INTENT, intent);</span><br><span class="line">            //5</span><br><span class="line">            args[index] = subIntent;</span><br><span class="line">        &#125;</span><br><span class="line">        return method.invoke(mActivityManager, args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后在自定义的 application 中调用如下方法即可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public static void hookAMS() throws Exception &#123;</span><br><span class="line">       Object defaultSingleton = null;</span><br><span class="line">       //1</span><br><span class="line">       if (Build.VERSION.SDK_INT &gt;= 26) &#123;</span><br><span class="line">           Class&lt;?&gt; activityManageClazz = Class.forName(&quot;android.app.ActivityManager&quot;);</span><br><span class="line">           //获取activityManager中的IActivityManagerSingleton字段</span><br><span class="line">           defaultSingleton = FieldUtil.getField(activityManageClazz, null, &quot;IActivityManagerSingleton&quot;);</span><br><span class="line">       &#125; else &#123;</span><br><span class="line">           Class&lt;?&gt; activityManagerNativeClazz = Class.forName(&quot;android.app.ActivityManagerNative&quot;);</span><br><span class="line">           //获取ActivityManagerNative中的gDefault字段</span><br><span class="line">           defaultSingleton = FieldUtil.getField(activityManagerNativeClazz, null, &quot;gDefault&quot;);</span><br><span class="line">       &#125;</span><br><span class="line">       Class&lt;?&gt; singletonClazz = Class.forName(&quot;android.util.Singleton&quot;);</span><br><span class="line">       //2</span><br><span class="line">       Field mInstanceField = FieldUtil.getField(singletonClazz, &quot;mInstance&quot;);</span><br><span class="line">       //获取iActivityManager //3</span><br><span class="line">       Object iActivityManager = mInstanceField.get(defaultSingleton);</span><br><span class="line">       Class&lt;?&gt; iActivityManagerClazz = Class.forName(&quot;android.app.IActivityManager&quot;);</span><br><span class="line">       Object proxy = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),</span><br><span class="line">               new Class&lt;?&gt;[]&#123;iActivityManagerClazz&#125;, new IActivityManagerProxy(iActivityManager));</span><br><span class="line">       mInstanceField.set(defaultSingleton, proxy);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>做到这里，我们才做完了一半， 接下来就是在启动之前将 intent 换为我们原本要启动的 Activity 的 intent, 这个 hook 点我们可以选择 ActivityThread 的内部类 H(集成自Handler), 通过自定义 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">public class HCallback implements android.os.Handler.Callback &#123;</span><br><span class="line">    public static final int LAUNCH_ACTIVITY = 100;</span><br><span class="line">    Handler mHandler;</span><br><span class="line"></span><br><span class="line">    public HCallback(Handler handler) &#123;</span><br><span class="line">        mHandler = handler;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public boolean handleMessage(Message msg) &#123;</span><br><span class="line">        if (msg.what == LAUNCH_ACTIVITY) &#123;</span><br><span class="line">            Object r = msg.obj;</span><br><span class="line">            try &#123;</span><br><span class="line">                //得到消息中的Intent(启动SubActivity的Intent)</span><br><span class="line">                Intent intent = (Intent) FieldUtil.getField(r.getClass(), r, &quot;intent&quot;);</span><br><span class="line">                //得到此前保存起来的Intent(启动TargetActivity的Intent)</span><br><span class="line">                Intent target = intent.getParcelableExtra(HookHelper.TARGET_INTENT);</span><br><span class="line">                //将启动SubActivity的Intent替换为启动TargetActivity的Intent</span><br><span class="line">                intent.setComponent(target.getComponent());</span><br><span class="line">            &#125; catch (Exception e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        mHandler.handleMessage(msg);</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后替换掉 ActivityThread 中的字段</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">public static void hookHandler() throws Exception &#123;</span><br><span class="line">        Class&lt;?&gt; activityThreadClass = Class.forName(&quot;android.app.ActivityThread&quot;);</span><br><span class="line">        //1</span><br><span class="line">        Object currentActivityThread= FieldUtil.getField(activityThreadClass ,null,&quot;sCurrentActivityThread&quot;);</span><br><span class="line">        //2</span><br><span class="line">        Field mHField = FieldUtil.getField(activityThreadClass,&quot;mH&quot;);</span><br><span class="line">        //3</span><br><span class="line">        Handler mH = (Handler) mHField.get(currentActivityThread);</span><br><span class="line">        FieldUtil.setField(Handler.class,mH,&quot;mCallback&quot;,new HCallback(mH));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>代码实现</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">* 加载插件 Apk</span><br><span class="line">*/</span><br><span class="line">public void loadPluginApk() &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            File dst = new File(getDir(&quot;dex&quot;, Context.MODE_PRIVATE).getAbsolutePath());</span><br><span class="line">			// 因为不是下载的 apk 原本放在 assets 目录下， 先复制到内存卡中</span><br><span class="line">            FileUtils.copyAssetsFile(this, &quot;plugin.apk&quot;, dst);</span><br><span class="line">            // DexClassLoader</span><br><span class="line">            String dexPath = getFileStreamPath(&quot;plugin.apk&quot;).getAbsolutePath();</span><br><span class="line">            String fileReleasePath = getDir(&quot;dex&quot;, Context.MODE_PRIVATE).getAbsolutePath();</span><br><span class="line">            dexPluginLoader = new DexClassLoader(dexPath, fileReleasePath, null, getClassLoader());</span><br><span class="line">            // AssetManager</span><br><span class="line">            replaceClassLoader(dexPluginLoader);</span><br><span class="line">            Class assetClass = AssetManager.class;</span><br><span class="line">            mAssetManager = (AssetManager) assetClass.newInstance();</span><br><span class="line">            Method addAssetPath = mAssetManager.getClass().getMethod(&quot;addAssetPath&quot;,</span><br><span class="line">                    String.class);</span><br><span class="line">            addAssetPath.invoke(mAssetManager, getFilesDir().getAbsolutePath() + File.separator + &quot;plugin.apk&quot;);</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">* 将加载过插件 apk 的 DexClassLoader 合并到原本的 DexClassLoader 中</span><br><span class="line">*/</span><br><span class="line">private void replaceClassLoader(DexClassLoader loader) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            Class clazz_Ath = Class.forName(&quot;android.app.ActivityThread&quot;);</span><br><span class="line">            Class clazz_LApk = Class.forName(&quot;android.app.LoadedApk&quot;);</span><br><span class="line">            Object currentActivityThread = clazz_Ath.getMethod(&quot;currentActivityThread&quot;).invoke(null);</span><br><span class="line">            Field field1 = clazz_Ath.getDeclaredField(&quot;mPackages&quot;);</span><br><span class="line">            field1.setAccessible(true);</span><br><span class="line">            Map mPackages = (Map) field1.get(currentActivityThread);</span><br><span class="line">            String packageName = getPackageName();</span><br><span class="line">            WeakReference ref = (WeakReference) mPackages.get(packageName);</span><br><span class="line">            Field field2 = clazz_LApk.getDeclaredField(&quot;mClassLoader&quot;);</span><br><span class="line">            field2.setAccessible(true);</span><br><span class="line">            field2.set(ref.get(), loader);</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">* 获取插件的资源</span><br><span class="line">*/</span><br><span class="line">public void replaceContextResources(Context context, Resources resources)&#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            Field field = context.getClass().getDeclaredField(&quot;mResources&quot;);</span><br><span class="line">            field.setAccessible(true);</span><br><span class="line">            field.set(context, resources);</span><br><span class="line">            System.out.println(&quot;debug:repalceResources succ&quot;);</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            System.out.println(&quot;debug:repalceResources error&quot;);</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">    public void onCreate() &#123;</span><br><span class="line">        super.onCreate();</span><br><span class="line">        loadPluginApk();</span><br><span class="line">        try &#123;</span><br><span class="line">            HookHelper.hookAMS();</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        Resources resources = new Resources(mAssetManager, getResources().getDisplayMetrics(), getResources().getConfiguration());</span><br><span class="line">        replaceContextResources(this, resources);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected void attachBaseContext(Context base) &#123;</span><br><span class="line">        super.attachBaseContext(base);</span><br><span class="line">        try &#123;</span><br><span class="line">            HookHelper.hookHandler();</span><br><span class="line"></span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">* 调用 kotlin 代码</span><br><span class="line">*/</span><br><span class="line"></span><br><span class="line">override fun onClick(v: View?) &#123;</span><br><span class="line">        when (v?.id) &#123;</span><br><span class="line">            R.id.bt_test_method -&gt; &#123;</span><br><span class="line">                // 使用插件中的类</span><br><span class="line">                var stringUtils: Class&lt;*&gt; = MyApplication.dexPluginLoader.loadClass(&quot;learn.hugy.com.pluginapk.StringUtils&quot;)</span><br><span class="line">                var equalsMethod: Method = stringUtils.getDeclaredMethod(&quot;equals&quot;, String::class.java, String::class.java)</span><br><span class="line">                Toast.makeText(this, equalsMethod.invoke(null, &quot;1&quot;, &quot;2&quot;).toString(), Toast.LENGTH_SHORT).show()</span><br><span class="line">            &#125;</span><br><span class="line">            R.id.bt_test_resource -&gt; &#123;</span><br><span class="line">                val pluginResource = Resources(MyApplication.mAssetManager, resources.displayMetrics, resources.configuration)</span><br><span class="line">                val resId = getResId(this, filesDir.absolutePath + File.separator + &quot;plugin.apk&quot;, &quot;learn.hugy.com.pluginapk&quot;, &quot;warning&quot;)</span><br><span class="line">                var drawable: Drawable = pluginResource.getDrawable(resId)</span><br><span class="line">                val inputStream: InputStream = pluginResource.assets.open(&quot;hello.html&quot;)</span><br><span class="line">                val bts = ByteArray(1024)</span><br><span class="line">                var len = inputStream.read(bts)</span><br><span class="line">                while (len != -1) &#123;</span><br><span class="line">                    Log.i(&quot;PLUGIN&quot;, String(bts))</span><br><span class="line">                    len = inputStream.read(bts)</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">            R.id.bt_test_activity -&gt; &#123;</span><br><span class="line">                // 使用插件中的类</span><br><span class="line">                var pluginActivity: Class&lt;*&gt; = MyApplication.dexPluginLoader.loadClass(&quot;learn.hugy.com.pluginapk.PluginActivity&quot;)</span><br><span class="line">                var intent = Intent(this, pluginActivity)</span><br><span class="line">                startActivity(intent)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p><b>总结</b></p>
+<p>插件化的实现分为类的加载，资源的使用和四大组件的加载，其中四大组件的加载是重点，本文主要讲述了 hook IActivityManager 来实现 Activity 的使用。</p>
+<p>如有什么疑问，欢迎留言讨论。</p>
+
+        
+        <br>
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+
+        <div id="lv-container">
+        </div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+        <li>
+            <a target="_blank" href="https://www.zhihu.com/people/octoberqin">
+                            <span class="fa-stack fa-lg">
+                                 <i class="iconfont icon-zhihu"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank" href="https://github.com/lakeMirror">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a href="https://hexo.io/">Hexo</a>  Theme <a href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = "search.json"
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="/js/index.js"></script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+    <script>
+        /**
+         *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+         *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+        */
+        if( '' || '')
+        var disqus_config = function () {
+            this.page.url = '';  // Replace PAGE_URL with your page's canonical URL variable
+            this.page.identifier = ''; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+            var d = document, s = d.createElement('script');
+            s.src = 'https://blogoflakemirror.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+
+
+
+</html>

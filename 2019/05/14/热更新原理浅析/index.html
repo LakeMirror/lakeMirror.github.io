@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="做个不甘于平凡的人，首先要做个平凡的人">
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        热更新原理浅析 - undefined
+        
+    </title>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/aircloud.css">
+    <link rel="stylesheet" href="/css/gitment.css">
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_pl6z7sid89qkt9.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> learn by heart， live by heart </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar">
+            <img src="/img/avatar.jpg">
+        </div>
+        <div class="name">
+            <i>秦家十月</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li>
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li>
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+            <li>
+                <a id="search">
+                    <i class="iconfont icon-sousuo1"></i>
+                    <span>搜索</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">热更新原理浅析</span></a></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input">
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+        <div class="index-about-mobile">
+            <i> learn by heart， live by heart </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        热更新原理浅析
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2019-05-14 11:02:06</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#Android" title="Android">Android</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#HotFix" title="HotFix">HotFix</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+
+    </div>
+    <div class="post-content ">
+        <h2>热更新原理浅析</h2>
+
+<p><b>前言</b></p>
+<p>热更新，说白了就是一种在不发布版本的情况下，能够让我们修复线上 Bug 的技术，现在市面上流行的热更新框架有 Tinker 、 AndFix 和 Robust。 这篇文章写出来主要是简要的分析一下热更新的原理，并且最后会介绍一下 AndFix 的用法和一些源码的分析。</p>
+<p><b>原理</b></p>
+<p>热更新听着很高大上，其实说穿了，就是利用 DexClassLoader 加载外部存储中的 apk/jar/dex 文件中打包生成的 davilk 虚拟机能够识别的 dex 文件，然后将他们添加到 BaseClassLoader 的 dexPathList 的前面，这样，davilk 虚拟机在加载类的时候，首先就会找到我们修复过的类，而不会加载后面的有问题的类， 从而达成了修复 Bug 的目的。</p>
+<p><b>实现</b></p>
+<p>上一下核心代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br></pre></td><td class="code"><pre><span class="line">public class HotFixUtil &#123;</span><br><span class="line"></span><br><span class="line">    private static final String TAG = &quot;lxbnjupt&quot;;</span><br><span class="line">    private static final String NAME_BASE_DEX_CLASS_LOADER = &quot;dalvik.system.BaseDexClassLoader&quot;;</span><br><span class="line">    private static final String FIELD_DEX_ELEMENTS = &quot;dexElements&quot;;</span><br><span class="line">    private static final String FIELD_PATH_LIST = &quot;pathList&quot;;</span><br><span class="line">    private static final String DEX_SUFFIX = &quot;.dex&quot;;</span><br><span class="line">    private static final String APK_SUFFIX = &quot;.apk&quot;;</span><br><span class="line">    private static final String JAR_SUFFIX = &quot;.jar&quot;;</span><br><span class="line">    private static final String ZIP_SUFFIX = &quot;.zip&quot;;</span><br><span class="line">    private static final String DEX_DIR = &quot;patch&quot;;</span><br><span class="line">    private static final String OPTIMIZE_DEX_DIR = &quot;odex&quot;;</span><br><span class="line"></span><br><span class="line">    public static void doHotFix(Context context) throws IllegalAccessException, NoSuchFieldException, ClassNotFoundException &#123;</span><br><span class="line">        if (context == null) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        // 补丁存放目录为 /storage/emulated/0/Android/data/com.lxbnjupt.hotfixdemo/files/patch</span><br><span class="line">        File dexFile = HotFixManager.getPatchDexFile();</span><br><span class="line">        if (dexFile == null || !dexFile.exists()) &#123;</span><br><span class="line">            Log.e(TAG, &quot;热更新补丁目录不存在&quot;);</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        File odexFile = context.getDir(OPTIMIZE_DEX_DIR, Context.MODE_PRIVATE);</span><br><span class="line">        if (!odexFile.exists()) &#123;</span><br><span class="line">            odexFile.mkdir();</span><br><span class="line">        &#125;</span><br><span class="line">        File[] listFiles = null;</span><br><span class="line">        if (dexFile.isFile()) &#123;</span><br><span class="line">            listFiles = new File[]&#123;dexFile&#125;;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            listFiles = dexFile.listFiles();</span><br><span class="line">        &#125;</span><br><span class="line">        if (listFiles == null || listFiles.length == 0) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        String dexPath = getPatchDexPath(listFiles);</span><br><span class="line">        String odexPath = odexFile.getAbsolutePath();</span><br><span class="line">        // 获取PathClassLoader</span><br><span class="line">        PathClassLoader pathClassLoader = (PathClassLoader) context.getClassLoader();</span><br><span class="line">        // 构建DexClassLoader，用于加载补丁dex</span><br><span class="line">        DexClassLoader dexClassLoader = new DexClassLoader(dexPath, odexPath, null, pathClassLoader);</span><br><span class="line">        // 获取PathClassLoader的Element数组</span><br><span class="line">        Object pathElements = getDexElements(pathClassLoader);</span><br><span class="line">        // 获取构建的DexClassLoader的Element数组</span><br><span class="line">        Object dexElements = getDexElements(dexClassLoader);</span><br><span class="line">        // 合并Element数组</span><br><span class="line">        Object combineElementArray = combineElementArray(pathElements, dexElements);</span><br><span class="line">        // 通过反射，将合并后的Element数组赋值给PathClassLoader中pathList里面的dexElements变量</span><br><span class="line">        setDexElements(pathClassLoader, combineElementArray);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 获取补丁dex文件路径集合</span><br><span class="line">     *</span><br><span class="line">     * @param listFiles</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    private static String getPatchDexPath(File[] listFiles) &#123;</span><br><span class="line">        StringBuilder sb = new StringBuilder();</span><br><span class="line">        for (int i = 0; i &lt; listFiles.length; i++) &#123;</span><br><span class="line">            // 遍历查找文件中.dex .jar .apk .zip结尾的文件</span><br><span class="line">            File file = listFiles[i];</span><br><span class="line">            if (file.getName().endsWith(DEX_SUFFIX)</span><br><span class="line">                    || file.getName().endsWith(APK_SUFFIX)</span><br><span class="line">                    || file.getName().endsWith(JAR_SUFFIX)</span><br><span class="line">                    || file.getName().endsWith(ZIP_SUFFIX)) &#123;</span><br><span class="line">                if (i != 0 &amp;&amp; i != (listFiles.length - 1)) &#123;</span><br><span class="line">                    // 多个dex路径 添加默认的:分隔符</span><br><span class="line">                    sb.append(File.pathSeparator);</span><br><span class="line">                &#125;</span><br><span class="line">                sb.append(file.getAbsolutePath());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return sb.toString();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 合并Element数组，将补丁dex放在最前面</span><br><span class="line">     *</span><br><span class="line">     * @param pathElements PathClassLoader中pathList里面的Element数组</span><br><span class="line">     * @param dexElements  补丁dex数组</span><br><span class="line">     * @return 合并之后的Element数组</span><br><span class="line">     */</span><br><span class="line">    private static Object combineElementArray(Object pathElements, Object dexElements) &#123;</span><br><span class="line">        Class&lt;?&gt; componentType = pathElements.getClass().getComponentType();</span><br><span class="line">        int i = Array.getLength(pathElements);// 原dex数组长度</span><br><span class="line">        int j = Array.getLength(dexElements);// 补丁dex数组长度</span><br><span class="line">        int k = i + j;// 总数组长度（原dex数组长度 + 补丁dex数组长度)</span><br><span class="line">        Object result = Array.newInstance(componentType, k);// 创建一个类型为componentType，长度为k的新数组</span><br><span class="line">        System.arraycopy(dexElements, 0, result, 0, j);// 补丁dex数组在前</span><br><span class="line">        System.arraycopy(pathElements, 0, result, j, i);// 原dex数组在后</span><br><span class="line">        return result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 获取Element数组</span><br><span class="line">     *</span><br><span class="line">     * @param classLoader 类加载器</span><br><span class="line">     * @return</span><br><span class="line">     * @throws ClassNotFoundException</span><br><span class="line">     * @throws NoSuchFieldException</span><br><span class="line">     * @throws IllegalAccessException</span><br><span class="line">     */</span><br><span class="line">    private static Object getDexElements(ClassLoader classLoader) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException &#123;</span><br><span class="line">        // 获取BaseDexClassLoader，是PathClassLoader以及DexClassLoader的父类</span><br><span class="line">        Class&lt;?&gt; BaseDexClassLoaderClazz = Class.forName(NAME_BASE_DEX_CLASS_LOADER);</span><br><span class="line">        // 获取pathList字段，并设置为可以访问</span><br><span class="line">        Field pathListField = BaseDexClassLoaderClazz.getDeclaredField(FIELD_PATH_LIST);</span><br><span class="line">        pathListField.setAccessible(true);</span><br><span class="line">        // 获取DexPathList对象</span><br><span class="line">        Object dexPathList = pathListField.get(classLoader);</span><br><span class="line">        // 获取dexElements字段，并设置为可以访问</span><br><span class="line">        Field dexElementsField = dexPathList.getClass().getDeclaredField(FIELD_DEX_ELEMENTS);</span><br><span class="line">        dexElementsField.setAccessible(true);</span><br><span class="line">        // 获取Element数组，并返回</span><br><span class="line">        return dexElementsField.get(dexPathList);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 通过反射，将合并后的Element数组赋值给PathClassLoader中pathList里面的dexElements变量</span><br><span class="line">     *</span><br><span class="line">     * @param classLoader PathClassLoader类加载器</span><br><span class="line">     * @param value       合并后的Element数组</span><br><span class="line">     * @throws ClassNotFoundException</span><br><span class="line">     * @throws NoSuchFieldException</span><br><span class="line">     * @throws IllegalAccessException</span><br><span class="line">     */</span><br><span class="line">    private static void setDexElements(ClassLoader classLoader, Object value) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException &#123;</span><br><span class="line">        // 获取BaseDexClassLoader，是PathClassLoader以及DexClassLoader的父类</span><br><span class="line">        Class&lt;?&gt; BaseDexClassLoaderClazz = Class.forName(NAME_BASE_DEX_CLASS_LOADER);</span><br><span class="line">        // 获取pathList字段，并设置为可以访问</span><br><span class="line">        Field pathListField = BaseDexClassLoaderClazz.getDeclaredField(FIELD_PATH_LIST);</span><br><span class="line">        pathListField.setAccessible(true);</span><br><span class="line">        // 获取DexPathList对象</span><br><span class="line">        Object dexPathList = pathListField.get(classLoader);</span><br><span class="line">        // 获取dexElements字段，并设置为可以访问</span><br><span class="line">        Field dexElementsField = dexPathList.getClass().getDeclaredField(FIELD_DEX_ELEMENTS);</span><br><span class="line">        dexElementsField.setAccessible(true);</span><br><span class="line">        // 将合并后的Element数组赋值给dexElements变量</span><br><span class="line">        dexElementsField.set(dexPathList, value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该有的注释代码里都有体现，使用时调用 doHotFix 方法就可以了， 补丁文件事先通过网络进行下载， 然后存放在 /storage/emulated/0/Android/data/com.lxbnjupt.hotfixdemo/files/patch 目录下，我这里使用的补丁文件是通过 build-tools 下的 dx 工具打包成的 dex。 具体的使用命令如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">dx --dex -output=outPath 修复的文件路径 ...</span><br></pre></td></tr></table></figure>
+<p>想要源代码的朋友戳这里： <a href="https://github.com/LakeMirror/hotfix-android" target="_blank" rel="noopener">HotFix</a></p>
+<p><b>AndFix</b></p>
+<p>关于 AndFix 使用，可以去 gitHub 下查看一下它的 index.md ，基本上说的已经非常详细了： <a href="https://github.com/alibaba/AndFix" target="_blank" rel="noopener">AndFix</a></p>
+<p>这里主要分析一下它的实现：</p>
+<blockquote>
+<p>首先是 pacthManager = new PatchManager(this);</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public PatchManager(Context context) &#123;</span><br><span class="line">		mContext = context;</span><br><span class="line">		mAndFixManager = new AndFixManager(mContext);</span><br><span class="line">		mPatchDir = new File(mContext.getFilesDir(), DIR);</span><br><span class="line">		mPatchs = new ConcurrentSkipListSet&lt;Patch&gt;();</span><br><span class="line">		mLoaders = new ConcurrentHashMap&lt;String, ClassLoader&gt;();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中最重要的应该是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mAndFixManager = new AndFixManager(mContext);</span><br><span class="line">mPatchDir = new File(mContext.getFilesDir(), DIR);</span><br></pre></td></tr></table></figure>
+<p>首先看一下 AndFixManger</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">public AndFixManager(Context context) &#123;</span><br><span class="line">		mContext = context;</span><br><span class="line">		// whether support on the device</span><br><span class="line">		mSupport = Compat.isSupport();</span><br><span class="line">		if (mSupport) &#123;</span><br><span class="line">			mSecurityChecker = new SecurityChecker(mContext);</span><br><span class="line">			mOptDir = new File(mContext.getFilesDir(), DIR);</span><br><span class="line">			if (!mOptDir.exists() &amp;&amp; !mOptDir.mkdirs()) &#123;// make directory fail</span><br><span class="line">				mSupport = false;</span><br><span class="line">				Log.e(TAG, &quot;opt dir create error.&quot;);</span><br><span class="line">			&#125; else if (!mOptDir.isDirectory()) &#123;// not directory</span><br><span class="line">				mOptDir.delete();</span><br><span class="line">				mSupport = false;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>AndFixManger 的构造方法中， Compat.isSupport() 做了一些是否支持的判断，主要有是否为 yunOs 系统， java 虚拟机版本号还有 android 的 SDK 版本等。 SecurityChecker 主要是做是否签名信息的获取。</p>
+<p>然后 mPatchDir 是 AndFix 默认的 apatch 文件存放的位置，不调用 addPatch() 方法的情况下， loadPatch() 会去此目录下查找 apatch 文件；</p>
+<blockquote>
+<p>patchManager.init(versionName);</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public void init(String appVersion) &#123;</span><br><span class="line">		if (!mPatchDir.exists() &amp;&amp; !mPatchDir.mkdirs()) &#123;// make directory fail</span><br><span class="line">			Log.e(TAG, &quot;patch dir create error.&quot;);</span><br><span class="line">			return;</span><br><span class="line">		&#125; else if (!mPatchDir.isDirectory()) &#123;// not directory</span><br><span class="line">			mPatchDir.delete();</span><br><span class="line">			return;</span><br><span class="line">		&#125;</span><br><span class="line">		SharedPreferences sp = mContext.getSharedPreferences(SP_NAME,</span><br><span class="line">				Context.MODE_PRIVATE);</span><br><span class="line">		String ver = sp.getString(SP_VERSION, null);</span><br><span class="line">		if (ver == null || !ver.equalsIgnoreCase(appVersion)) &#123;</span><br><span class="line">			cleanPatch();</span><br><span class="line">			sp.edit().putString(SP_VERSION, appVersion).commit();</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			initPatchs();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>这段代码主要是判断 SharedPreferences 中保存的 SP_VERSION 是否与传入的 appVersion 一致， 如果一致的的话， 直接调用 initPatchs() 将默认目录下的 apatch 文件加载进来， 如果不一致，将 apatch 目录清空以方便加载新的 apatch 文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">private void cleanPatch() &#123;</span><br><span class="line">		File[] files = mPatchDir.listFiles();</span><br><span class="line">		for (File file : files) &#123;</span><br><span class="line">			mAndFixManager.removeOptFile(file);</span><br><span class="line">			if (!FileUtil.deleteFile(file)) &#123;</span><br><span class="line">				Log.e(TAG, file.getName() + &quot; delete error.&quot;);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">private void initPatchs() &#123;</span><br><span class="line">		File[] files = mPatchDir.listFiles();</span><br><span class="line">		for (File file : files) &#123;</span><br><span class="line">			addPatch(file);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">private Patch addPatch(File file) &#123;</span><br><span class="line">		Patch patch = null;</span><br><span class="line">		if (file.getName().endsWith(SUFFIX)) &#123;</span><br><span class="line">			try &#123;</span><br><span class="line">				patch = new Patch(file);</span><br><span class="line">				mPatchs.add(patch);</span><br><span class="line">			&#125; catch (IOException e) &#123;</span><br><span class="line">				Log.e(TAG, &quot;addPatch&quot;, e);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		return patch;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>loadPatch() 方法</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">public void loadPatch() &#123;</span><br><span class="line">		mLoaders.put(&quot;*&quot;, mContext.getClassLoader());// wildcard</span><br><span class="line">		Set&lt;String&gt; patchNames;</span><br><span class="line">		List&lt;String&gt; classes;</span><br><span class="line">		for (Patch patch : mPatchs) &#123;</span><br><span class="line">			patchNames = patch.getPatchNames();</span><br><span class="line">			for (String patchName : patchNames) &#123;</span><br><span class="line">				classes = patch.getClasses(patchName);</span><br><span class="line">				mAndFixManager.fix(patch.getFile(), mContext.getClassLoader(),</span><br><span class="line">						classes);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>重点很清晰了 AndFixManager 的 fix 方法，下面看一代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line">public synchronized void fix(File file, ClassLoader classLoader,</span><br><span class="line">			List&lt;String&gt; classes) &#123;</span><br><span class="line">		// 判断是否支持</span><br><span class="line">		if (!mSupport) &#123;</span><br><span class="line">			return;</span><br><span class="line">		&#125;</span><br><span class="line">		// 判断签名是否一致</span><br><span class="line">		if (!mSecurityChecker.verifyApk(file)) &#123;// security check fail</span><br><span class="line">			return;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		try &#123;</span><br><span class="line">			File optfile = new File(mOptDir, file.getName());</span><br><span class="line">			boolean saveFingerprint = true;</span><br><span class="line">			if (optfile.exists()) &#123;</span><br><span class="line">				// need to verify fingerprint when the optimize file exist,</span><br><span class="line">				// prevent someone attack on jailbreak device with</span><br><span class="line">				// Vulnerability-Parasyte.</span><br><span class="line">				// btw:exaggerated android Vulnerability-Parasyte</span><br><span class="line">				// http://secauo.com/Exaggerated-Android-Vulnerability-Parasyte.html</span><br><span class="line">				if (mSecurityChecker.verifyOpt(optfile)) &#123;</span><br><span class="line">					saveFingerprint = false;</span><br><span class="line">				&#125; else if (!optfile.delete()) &#123;</span><br><span class="line">					return;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			final DexFile dexFile = DexFile.loadDex(file.getAbsolutePath(),</span><br><span class="line">					optfile.getAbsolutePath(), Context.MODE_PRIVATE);</span><br><span class="line"></span><br><span class="line">			if (saveFingerprint) &#123;</span><br><span class="line">				mSecurityChecker.saveOptSig(optfile);</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			ClassLoader patchClassLoader = new ClassLoader(classLoader) &#123;</span><br><span class="line">				@Override</span><br><span class="line">				protected Class&lt;?&gt; findClass(String className)</span><br><span class="line">						throws ClassNotFoundException &#123;</span><br><span class="line">					Class&lt;?&gt; clazz = dexFile.loadClass(className, this);</span><br><span class="line">					if (clazz == null</span><br><span class="line">							&amp;&amp; className.startsWith(&quot;com.alipay.euler.andfix&quot;)) &#123;</span><br><span class="line">						return Class.forName(className);// annotation’s class</span><br><span class="line">														// not found</span><br><span class="line">					&#125;</span><br><span class="line">					if (clazz == null) &#123;</span><br><span class="line">						throw new ClassNotFoundException(className);</span><br><span class="line">					&#125;</span><br><span class="line">					return clazz;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;;</span><br><span class="line">			Enumeration&lt;String&gt; entrys = dexFile.entries();</span><br><span class="line">			Class&lt;?&gt; clazz = null;</span><br><span class="line">			while (entrys.hasMoreElements()) &#123;</span><br><span class="line">				String entry = entrys.nextElement();</span><br><span class="line">				if (classes != null &amp;&amp; !classes.contains(entry)) &#123;</span><br><span class="line">					continue;// skip, not need fix</span><br><span class="line">				&#125;</span><br><span class="line">				clazz = dexFile.loadClass(entry, patchClassLoader);</span><br><span class="line">				if (clazz != null) &#123;</span><br><span class="line">					fixClass(clazz, classLoader);</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; catch (IOException e) &#123;</span><br><span class="line">			Log.e(TAG, &quot;pacth&quot;, e);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>经过一系列的判断后，最终拿到符合要求的 clazz 文件， 调用 fixClass() 方法进行修复。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">private void fixClass(Class&lt;?&gt; clazz, ClassLoader classLoader) &#123;</span><br><span class="line">		Method[] methods = clazz.getDeclaredMethods();</span><br><span class="line">		MethodReplace methodReplace;</span><br><span class="line">		String clz;</span><br><span class="line">		String meth;</span><br><span class="line">		for (Method method : methods) &#123;</span><br><span class="line">			methodReplace = method.getAnnotation(MethodReplace.class);</span><br><span class="line">			if (methodReplace == null)</span><br><span class="line">				continue;</span><br><span class="line">			clz = methodReplace.clazz();</span><br><span class="line">			meth = methodReplace.method();</span><br><span class="line">			if (!isEmpty(clz) &amp;&amp; !isEmpty(meth)) &#123;</span><br><span class="line">				replaceMethod(classLoader, clz, meth, method);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>这个方法已经很明确了，就是遍历所有方法后，将有 MethodReplace 注解的方法（就是需要修复的方法）替换掉， 至于 replaceMethod 中更深层次的实现， 大家有兴趣的可以自己去研究。</p>
+<p><b>总结</b></p>
+<p>热修复之前总是在听说，一直觉得不懂但是很厉害的样子，现在接触下来，发现其实只要懂了一些后，并不是那么的不可亵玩，万事都是开头难而已。</p>
+<p>欢迎有疑问的朋友留言讨论。</p>
+
+        
+        <br>
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+
+        <div id="lv-container">
+        </div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+        <li>
+            <a target="_blank" href="https://www.zhihu.com/people/octoberqin">
+                            <span class="fa-stack fa-lg">
+                                 <i class="iconfont icon-zhihu"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank" href="https://github.com/lakeMirror">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a href="https://hexo.io/">Hexo</a>  Theme <a href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = "search.json"
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="/js/index.js"></script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+    <script>
+        /**
+         *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+         *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+        */
+        if( '' || '')
+        var disqus_config = function () {
+            this.page.url = '';  // Replace PAGE_URL with your page's canonical URL variable
+            this.page.identifier = ''; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+            var d = document, s = d.createElement('script');
+            s.src = 'https://blogoflakemirror.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+
+
+
+</html>
