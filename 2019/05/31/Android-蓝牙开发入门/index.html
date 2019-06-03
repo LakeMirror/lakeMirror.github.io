@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="做个不甘于平凡的人，首先要做个平凡的人">
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        Android 蓝牙开发入门 - undefined
+        
+    </title>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/aircloud.css">
+    <link rel="stylesheet" href="/css/gitment.css">
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_pl6z7sid89qkt9.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> learn by heart， live by heart </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar">
+            <img src="/img/avatar.jpg">
+        </div>
+        <div class="name">
+            <i>秦家十月</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li>
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li>
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+            <li>
+                <a id="search">
+                    <i class="iconfont icon-sousuo1"></i>
+                    <span>搜索</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined"><span class="toc-text">Android 蓝牙开发入门</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#undefined"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#undefined"><span class="toc-text">正文</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#undefined"><span class="toc-text">1、连接</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#undefined"><span class="toc-text">2、搜索</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#undefined"><span class="toc-text">3、配对</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#undefined"><span class="toc-text">4、连接</span></a></li></ol></li></ol></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input">
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+        <div class="index-about-mobile">
+            <i> learn by heart， live by heart </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        Android 蓝牙开发入门
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2019-05-31 16:33:34</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#Android" title="Android">Android</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#Bluetooth" title="Bluetooth">Bluetooth</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+
+    </div>
+    <div class="post-content ">
+        <p></p><h2>Android 蓝牙开发入门</h2><p></p>
+<h4>前言</h4>
+
+<p>想做一个手机连接打印机打印的功能，首先想到的就是蓝牙打印机，而使用的第一步就是搜索和蓝牙配对连接等功能，研究了一两天，便有了这篇文章。</p>
+<p>这篇文章，如题目所述一样，主要叙述蓝牙开发的人门知识，搜索、配对和连接，至于之后的通信，因为某些原因，暂时还没有深究，留待以后有时间再做研究总结。</p>
+<h4>正文</h4>
+
+<h6>1、连接</h6>
+
+<p>蓝牙的连接主要涉及的类就是 BluetoothAdapter, 它的获取也很简单，主要通过静态方法 getDefaultAdapter() 获取</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">			  </span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">              bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()</span><br><span class="line">              <span class="keyword">if</span> (!bluetoothAdapter.isEnabled) &#123;</span><br><span class="line">                  bluetoothAdapter?.enable()</span><br><span class="line">              &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                  Toast.makeText(<span class="keyword">this</span>, <span class="string">"蓝牙已经打开"</span>, Toast.LENGTH_SHORT).show()</span><br><span class="line">              &#125;</span><br><span class="line">          &#125; <span class="keyword">catch</span> (e: Exception) &#123;</span><br><span class="line">              e.printStackTrace()</span><br><span class="line">              Toast.makeText(<span class="keyword">this</span><span class="meta">@MainActivity</span>, <span class="string">"请检查手机是否支持蓝牙"</span>, Toast.LENGTH_SHORT).show()</span><br><span class="line">          &#125;</span><br></pre></td></tr></table></figure>
+<p>获取到 BluetoothAdapter 类之后，判断蓝牙是否是开启的，通过 isEnable() 和 enable() 方法进行操作，如果开启过程出现异常，那么可能就是手机不支持蓝牙功能。</p>
+<p>ps: <b>1、蓝牙开发之前一定要添加相关权限</b></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 蓝牙正常使用所需要的权限</span><br><span class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.BLUETOOTH"</span>/&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.BLUETOOTH_ADMIN"</span>/&gt;</span></span><br><span class="line">// google在android6.0之后，为了更好的保护用户的数据安全，所有需要访问硬件唯一标识符的地方都需要申请位置权限，也就是需要申请</span><br><span class="line">   <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.BLUETOOTH_PRIVILEGED"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">tools:ignore</span>=<span class="string">"ProtectedPermissions"</span> /&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.ACCESS_COARSE_LOCATION"</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<p><b>2、注意Android 6.0 之后动态权限的申请</b></p>
+<h6>2、搜索</h6>
+
+<p>蓝牙的搜索是一个过程性的操作，并不是一开始搜索，马上就会有结果返回的，当我们调用 BluetoothAdapter 的 startDiscovery() 方法进行搜索后，Android 系统开始搜索周围已开启蓝牙的设备， 每当找到一个设备的时候， 系统会以广播的形式通知我们。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">class BluetoothReceiver: BroadcastReceiver() &#123;</span><br><span class="line">   <span class="function">override fun <span class="title">onReceive</span><span class="params">(context: Context?, intent: Intent?)</span> </span>&#123;</span><br><span class="line">	when(intent?.action) &#123;</span><br><span class="line">           BluetoothAdapter.ACTION_STATE_CHANGED -&gt; &#123;</span><br><span class="line">               LogUtils.log(<span class="string">"ACTION_STATE_CHANGED"</span>)</span><br><span class="line">               Toast.makeText(context, <span class="string">"蓝牙状态信息变化"</span> + intent.toString(), Toast.LENGTH_SHORT).show()</span><br><span class="line">           &#125;</span><br><span class="line">           BluetoothAdapter.ACTION_DISCOVERY_STARTED -&gt; &#123;</span><br><span class="line">               LogUtils.log(<span class="string">"ACTION_DISCOVERY_STARTED"</span>)</span><br><span class="line">               Toast.makeText(context, <span class="string">"开始搜索蓝牙设备"</span> + intent.toString(), Toast.LENGTH_SHORT).show()</span><br><span class="line">           &#125;</span><br><span class="line">           BluetoothAdapter.ACTION_DISCOVERY_FINISHED -&gt; &#123;</span><br><span class="line">               LogUtils.log(<span class="string">"ACTION_DISCOVERY_FINISHED"</span>)</span><br><span class="line">               Toast.makeText(context, <span class="string">"搜索结束"</span> + intent.data, Toast.LENGTH_SHORT).show()</span><br><span class="line"></span><br><span class="line">           &#125;</span><br><span class="line">           BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED -&gt; &#123;</span><br><span class="line">               LogUtils.log(<span class="string">"ACTION_CONNECTION_STATE_CHANGED"</span>)</span><br><span class="line">               Toast.makeText(context, <span class="string">"搜索状态改变"</span> + intent.toString(), Toast.LENGTH_SHORT).show()</span><br><span class="line">           &#125;</span><br><span class="line">		<span class="comment">// 发现设备时的广播</span></span><br><span class="line">           BluetoothDevice.ACTION_FOUND -&gt; &#123;</span><br><span class="line">               LogUtils.log(<span class="string">"ACTION_FOUND"</span>)</span><br><span class="line">               <span class="keyword">var</span> device = intent?.getParcelableExtra&lt;BluetoothDevice&gt;(BluetoothDevice.EXTRA_DEVICE)</span><br><span class="line">               deviceListener?.found(device)</span><br><span class="line">               Toast.makeText(context, <span class="string">"发现设备:"</span> + device.name, Toast.LENGTH_SHORT).show()</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>当接收到系统的广播之后，之后可以通过接口回调或者是其他方式通知给你要展示的页面。</p>
+<h6>3、配对</h6>
+
+<p>找到蓝牙设备之后，并不能直接就进行连接，首先要和需要连接的设备进行配对操作。</p>
+<p>这个操作是通过 BluetoothDevice 的 createBond 方法来进行，不过 createBond 方法是私有的，我们需要通过反射来拿到这个方法进行调用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">	</span><br><span class="line">val method: Method = BluetoothDevice::class.java.getDeclaredMethod("createBond")</span><br><span class="line">   </span><br><span class="line">   val device = deviceList.get(bondIndex)</span><br><span class="line">method.invoke(item.getDevice()</span><br></pre></td></tr></table></figure>
+<h6>4、连接</h6>
+
+<p>配对完成之后就可以开始连接了</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> connection:BluetoothSocket = device.getDevice().createRfcommSocketToServiceRecord(UUID.fromString(uuid))</span><br><span class="line">         <span class="keyword">if</span> (!connection.isConnected) &#123;</span><br><span class="line">              connection.connect()</span><br><span class="line">              <span class="keyword">var</span> socketThread = SocketThread(connection)</span><br><span class="line">              executors.execute(socketThread)</span><br><span class="line">         &#125;</span><br></pre></td></tr></table></figure>
+<p>连接完成之后就可以进行通讯了，由于连接会持续很长一段时间，需要开启一个线程来进行通信方面的操作，具体的可以参照我的文章 <a href="https://lakemirror.github.io/2019/05/13/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E4%B9%8BSocket%E5%AE%9E%E7%8E%B0/" target="_blank" rel="noopener">消息推送之Socket实现</a>中的通讯方法来进行。</p>
+<p>欢迎有疑问的朋友留言讨论。</p>
+
+        
+        <br>
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+
+        <div id="lv-container">
+        </div>
+
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+        <li>
+            <a target="_blank" href="https://www.zhihu.com/people/octoberqin">
+                            <span class="fa-stack fa-lg">
+                                 <i class="iconfont icon-zhihu"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank" href="https://github.com/lakeMirror">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a href="https://hexo.io/">Hexo</a>  Theme <a href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = "search.json"
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="/js/index.js"></script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+    <script>
+        /**
+         *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+         *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+        */
+        if( '' || '')
+        var disqus_config = function () {
+            this.page.url = '';  // Replace PAGE_URL with your page's canonical URL variable
+            this.page.identifier = ''; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+            var d = document, s = d.createElement('script');
+            s.src = 'https://blogoflakemirror.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+
+
+
+</html>
